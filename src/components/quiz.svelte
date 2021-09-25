@@ -1,10 +1,12 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import Letters from './quiz-components/letters.svelte';
+	import Comments from './quiz-components/comments.svelte';
 	import { article, fetchArticle } from '../stores/articlestore';
 	import { guess } from '../stores/guessstore';
 
 	let lettersComponent: any;
+	let commentsComponent: any;
 
 	let answer: string;
 	let hiddenWord: string;
@@ -28,6 +30,7 @@
 					correctGuess = true;
 					if (!hiddenWord.includes('_')) {
 						playerWon = true;
+						commentsComponent.setComment('player-won');
 						lettersComponent.lockLetters();
 					}
 				}
@@ -38,6 +41,7 @@
 				if (lives.length === 0) {
 					hiddenWord = answer;
 					playerLost = true;
+					commentsComponent.setComment('player-lost');
 					lettersComponent.lockLetters();
 				}
 			}
@@ -58,6 +62,7 @@
 		lives = [...MAX_LIVES];
 		playerWon = false;
 		playerLost = false;
+		commentsComponent.setComment('');
 		newArticle();
 	};
 
@@ -68,25 +73,25 @@
 
 <main>
 	<section class="quiz">
-		<p class="quiz__lives">
-			{#each lives as life}{life}{/each}
-		</p>
+		<div class="quiz__status-bar">
+			<p class="quiz__lives">{#each lives as life}{life}{/each}</p>
+			<Comments bind:this={commentsComponent}/>
+		</div>
+			
 		<p class="quiz__hidden-word">{hiddenWord ? hiddenWord : ''}</p>
-		<div class="quiz__player-message">
+		<div class="quiz__wiki-description">
 			{#if playerLost}
-				<p class="quiz__comment">You failed to help WIKIMAN! 🥵</p>
+				<p class="quiz__extract">{extract}</p>
 				<button class="quiz__restart-button" on:click={restartGame}>
                     Try a new Wikipedia Article
                 </button>
-				<p class="quiz__extract">{extract}</p>
 				<p class="quiz__wiki-link"><a href={url} target="__blank">See the entire article on Wikipedia.</a></p>
 			{/if}
 			{#if playerWon}
-				<p  class="quiz__comment">Wow, you made it 😎 Good job!</p>
+				<p class="quiz__extract">{extract}</p>
 				<button class="quiz__restart-button" on:click={restartGame}
 					>Try a new Wikipedia Article</button
 				>
-				<p class="quiz__extract">{extract}</p>
 				<p class="quiz__wiki-link"><a href={url} target="__blank">See the entire article on Wikipedia.</a></p>
 			{/if}
 		</div>
@@ -98,29 +103,27 @@
 
 <style lang="scss">
 	.quiz {
+		&__status-bar {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+		}
 		&__lives {
 			height: 21px;
 			text-align: left;
 		}
 		&__hidden-word {
+			min-height: 48px;
 			font-family: 'Courier New', Courier, monospace;
-			height: 86px;
 			text-align: center;
 			font-size: 24px;
 			line-height: 2;
 			letter-spacing: 7px;
 		}
-		&__player-message {
-			min-height: 75px;
+		&__wiki-description {
 			text-align: center;
 			margin-bottom: 30px;
 			overflow: hidden;
-		}
-
-		&__comment {
-            font-size: 24px;
-            margin-top: 0;
-			margin-bottom: 50px;
 		}
 
 		&__restart-button {
@@ -130,7 +133,7 @@
 			background-color: hotpink;
 			color: black;
 			border-radius: 5px;
-			margin-bottom: 50px;
+			margin-top: 30px;
             border: 2px solid black;
             &:hover {
                 cursor: pointer;
@@ -138,7 +141,9 @@
 		}
 
 		&__extract {
-			line-height: 1.5;
+			font-size: 1.0625rem;
+			margin: 0;
+			line-height: 1.7;
 			text-align: left;
 		}
 
