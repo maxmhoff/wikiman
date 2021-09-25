@@ -78,7 +78,7 @@
 				<button class="quiz__restart-button" on:click={restartGame}>
                     Try a new Wikipedia Article
                 </button>
-				<p>{extract}</p>
+				<p class="quiz__extract">{extract}</p>
 				<p class="quiz__wiki-link"><a href={url} target="__blank">See the entire article on Wikipedia.</a></p>
 			{/if}
 			{#if playerWon}
@@ -128,10 +128,13 @@
 			width: 300px;
 			height: 50px;
 			background-color: hotpink;
-			color: white;
+			color: black;
 			border-radius: 5px;
 			margin-bottom: 50px;
             border: 2px solid black;
+            &:hover {
+                cursor: pointer;
+            }
 		}
 
 		&__extract {
