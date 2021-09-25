@@ -3,14 +3,13 @@
 </script>
 
 <main>
-	<section class="frontpage">
-		<h1 class="frontpage__title">WIKIMAN</h1>
+	<section class="index">
 		<Quiz />
 	</section>
 </main>
 
 <style lang='scss'>
-    .frontpage {
+    .index {
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -18,9 +17,5 @@
         max-width: 750px;
         margin-left: auto;
         margin-right: auto;
-        &__title {
-            font-size: 48px;
-            margin-top: 100px;
-        }
     }
 </style>

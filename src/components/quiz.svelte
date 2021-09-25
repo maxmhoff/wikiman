@@ -1,19 +1,20 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+    import { fade } from 'svelte/transition';
 	import Letters from './quiz-components/letters.svelte';
-	import Comments from './quiz-components/comments.svelte';
 	import { article, fetchArticle } from '../stores/articlestore';
 	import { guess } from '../stores/guessstore';
 
 	let lettersComponent: any;
-	let commentsComponent: any;
 
 	let answer: string;
 	let hiddenWord: string;
 	let extract: string;
 	let url: string;
+    let thumbnail: any;
+
 	const MAX_LIVES: string[] = ['💗', '💗', '💗', '💗', '💗', '💗', '💗'];
-	let lives: string[] = MAX_LIVES;
+	let lives: string[] = [...MAX_LIVES];
 	let playerLost = false;
 	let playerWon = false;
 	let firedFirst = false;
@@ -30,7 +31,6 @@
 					correctGuess = true;
 					if (!hiddenWord.includes('_')) {
 						playerWon = true;
-						commentsComponent.setComment('player-won');
 						lettersComponent.lockLetters();
 					}
 				}
@@ -41,7 +41,6 @@
 				if (lives.length === 0) {
 					hiddenWord = answer;
 					playerLost = true;
-					commentsComponent.setComment('player-lost');
 					lettersComponent.lockLetters();
 				}
 			}
@@ -53,6 +52,7 @@
 		answer = $article.title.toUpperCase();
 		extract = $article.extract;
 		url = $article.content_urls.desktop.page;
+        thumbnail = $article.thumbnail;
 		hiddenWord = answer.replace(/[a-z]/gi, '_');
 		lettersComponent.resetLetters();
 	};
@@ -62,7 +62,6 @@
 		lives = [...MAX_LIVES];
 		playerWon = false;
 		playerLost = false;
-		commentsComponent.setComment('');
 		newArticle();
 	};
 
@@ -71,44 +70,41 @@
 	});
 </script>
 
-<main>
-	<section class="quiz">
-		<div class="quiz__status-bar">
-			<p class="quiz__lives">{#each lives as life}{life}{/each}</p>
-			<Comments bind:this={commentsComponent}/>
-		</div>
-			
-		<p class="quiz__hidden-word">{hiddenWord ? hiddenWord : ''}</p>
-		<div class="quiz__wiki-description">
-			{#if playerLost}
-				<p class="quiz__extract">{extract}</p>
-				<button class="quiz__restart-button" on:click={restartGame}>
-                    Try a new Wikipedia Article
-                </button>
-				<p class="quiz__wiki-link"><a href={url} target="__blank">See the entire article on Wikipedia.</a></p>
-			{/if}
-			{#if playerWon}
-				<p class="quiz__extract">{extract}</p>
-				<button class="quiz__restart-button" on:click={restartGame}
-					>Try a new Wikipedia Article</button
-				>
-				<p class="quiz__wiki-link"><a href={url} target="__blank">See the entire article on Wikipedia.</a></p>
-			{/if}
-		</div>
-        {#if !playerLost && !playerWon}
-		    <Letters bind:this={lettersComponent} />
+<section class="quiz">
+    <p class="quiz__healthbar">{#each Array(MAX_LIVES.length) as life, idx}
+            {#if lives[idx]}
+                <span>{lives[idx]}</span>
+            {:else}
+                <span>🤍</span>
+            {/if}
+        {/each}
+    </p>  
+    <p class="quiz__hidden-word">{hiddenWord ? hiddenWord : ''}</p>
+    <div class="quiz__wiki-description">
+        {#if playerLost || playerWon}
+            {#if thumbnail?.source}
+                <img in:fade class="quiz__thumbnail" width={thumbnail.width} height={thumbnail.height} src={thumbnail.source} alt="Thumbnail from Wikipedia"/>
+            {/if}
+            <p class="quiz__extract">{extract}</p>
+            <button class="quiz__restart-button" on:click={restartGame}>
+                Try again
+            </button>
+            <p class="quiz__wiki-link"><a href={url} target="__blank">See the article on Wikipedia.</a></p>
         {/if}
-	</section>
-</main>
+    </div>
+</section>
+{#if !playerLost && !playerWon}
+    <Letters bind:this={lettersComponent} />
+{/if}
 
 <style lang="scss">
 	.quiz {
-		&__status-bar {
-			display: flex;
-			justify-content: space-between;
-			align-items: center;
-		}
-		&__lives {
+        position: relative;
+        margin-top: 80px;
+        width: 100%;
+
+		&__healthbar {
+            position: absolute;
 			height: 21px;
 			text-align: left;
 		}
@@ -119,36 +115,50 @@
 			font-size: 24px;
 			line-height: 2;
 			letter-spacing: 7px;
+            padding-top: 48px;
 		}
 		&__wiki-description {
+            width: fit-content;
+            margin: 0 auto;
 			text-align: center;
-			margin-bottom: 30px;
 			overflow: hidden;
 		}
 
 		&__restart-button {
             text-transform: uppercase;
-			width: 300px;
-			height: 50px;
+            font-weight: 500;
+            width: 160px;
+            height: 45px;
 			background-color: hotpink;
-			color: black;
+			color: white;
 			border-radius: 5px;
 			margin-top: 30px;
-            border: 2px solid black;
+            border: none;
             &:hover {
                 cursor: pointer;
             }
 		}
 
+        &__thumbnail {
+            margin-bottom: 24px;
+            border-radius: 16px;
+        }
+
 		&__extract {
+            text-align: left;
 			font-size: 1.0625rem;
 			margin: 0;
 			line-height: 1.7;
-			text-align: left;
 		}
 
         &__wiki-link {
             margin-top: 35px;
+            a, a:visited {
+                color: black;
+            }
+            a:hover {
+                color: hotpink;
+            }
         }
 	}
 </style>

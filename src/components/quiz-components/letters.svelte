@@ -43,21 +43,21 @@
 	};
 </script>
 
-<main>
-	<section class="letters">
-		<ul class="letters__list">
-			{#each letterObjects as letterObject, idx}
-				<li class="letters__list-item">
-					<button
-						class="letters__letter"
-						on:click={() => handleOnClick(letterObject, idx)}
-						disabled={letterObject.wasClicked}>{letterObject.letter}</button
-					>
-				</li>
-			{/each}
-		</ul>
-	</section>
-</main>
+
+<section class="letters">
+    <ul class="letters__list">
+        {#each letterObjects as letterObject, idx}
+            <li class="letters__list-item">
+                <button
+                    class="letters__letter"
+                    on:click={() => handleOnClick(letterObject, idx)}
+                    disabled={letterObject.wasClicked}>{letterObject.letter}</button
+                >
+            </li>
+        {/each}
+    </ul>
+</section>
+
 
 <style lang="scss">
 	.letters {
@@ -75,12 +75,12 @@
 			border-radius: 10px;
 			width: 40px;
 			height: 40px;
-			background-color: #fef8ff;
+			background-color: white;
 			border: 2px solid hotpink;
             transition: transform .3s ease;
             &:disabled {
                 transform: rotateY(180deg);
-                color: transparent
+                color: transparent;
             }
 		}
 	}
