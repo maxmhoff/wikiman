@@ -1,3 +1,4 @@
+[![Netlify Status](https://api.netlify.com/api/v1/badges/9b8958f1-f077-434c-8507-9472fc5c2254/deploy-status)](https://app.netlify.com/sites/wikiman/deploys)
 ## Developing
 
 Once you've installed dependencies with `npm install`, start a development server:
