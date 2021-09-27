@@ -120,12 +120,16 @@ export const calcDifficulty = (word: string) => {
 	const difficultyRating = Math.round(calcDifficultyOfLetters(word) + calcDifficultyOfUnusedLetters(word));
     console.log(difficultyRating);
     let difficulty;
-    if(difficultyRating < 230) {
-        difficulty = 'Easy'
-    } else if (difficultyRating >= 230 && difficultyRating < 280) {
-        difficulty = 'Medium'
+    if(difficultyRating < 220) {
+        difficulty = 'Very Easy';
+    } else if(difficultyRating >= 220 && difficultyRating < 260) {
+        difficulty = 'Easy';
+    } else if (difficultyRating >= 260 && difficultyRating < 300) {
+        difficulty = 'Medium';
+    } else if (difficultyRating >= 300 && difficultyRating < 340) {
+        difficulty = 'Hard';
     } else {
-        difficulty = 'Hard'
+        difficulty = 'Very Hard';
     }
     return difficulty;
 };
