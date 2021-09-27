@@ -49,8 +49,6 @@
 		}
 	});
 
-	
-
 	const newArticle = async () => {
 		await fetchArticle();
 		answer = $article.title.toUpperCase();
@@ -60,7 +58,6 @@
 		thumbnail = $article.thumbnail;
 		hiddenWord = answer.replace(/[a-z]/gi, '_');
 		lettersComponent.resetLetters();
-		
 	};
 
 	const restartGame = () => {
@@ -77,15 +74,20 @@
 </script>
 
 <section class="quiz">
-	<p class="quiz__healthbar">
-		{#each Array(MAX_LIVES.length) as life, idx}
-			{#if lives[idx]}
-				<span>{lives[idx]}</span>
-			{:else}
-				<span>🤍</span>
-			{/if}
-		{/each}
-	</p>
+	<div class="quiz__status-bar">
+		<p class="quiz__health-bar">
+			{#each Array(MAX_LIVES.length) as life, idx}
+				{#if lives[idx]}
+					<span>{lives[idx]}</span>
+				{:else}
+					<span>🤍</span>
+				{/if}
+			{/each}
+		</p>
+		{#if difficulty}
+			<p>Difficulty: {difficulty}</p>
+		{/if}
+	</div>
 	<p class="quiz__hidden-word">{hiddenWord ? hiddenWord : ''}</p>
 	<div class="quiz__wiki-description">
 		{#if playerLost || playerWon}
@@ -114,14 +116,22 @@
 <style lang="scss">
 	.quiz {
 		position: relative;
-		margin-top: 80px;
 		width: 100%;
+		height: 100%;
+		margin-top: 0;
 
-		&__healthbar {
+		&__status-bar {
 			position: absolute;
-			height: 21px;
-			text-align: left;
+			width: 100%;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
 		}
+
+		&__health-bar {
+			height: 21px;
+		}
+
 		&__hidden-word {
 			min-height: 48px;
 			font-family: 'Courier New', Courier, monospace;
@@ -176,4 +186,10 @@
 			}
 		}
 	}
+	//TODO: Create consistent media queries.
+	@media (min-width:768px) {
+        .quiz {
+            margin-top: 15vh;
+        }
+    }
 </style>
