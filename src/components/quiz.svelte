@@ -10,6 +10,7 @@
 
 	let answer: string;
 	let hiddenWord: string;
+	let description: string;
 	let extract: string;
 	let url: string;
 	let thumbnail: any;
@@ -53,6 +54,7 @@
 		await fetchArticle();
 		answer = $article.title.toUpperCase();
 		difficulty = calcDifficulty(answer);
+		description = $article.description;
 		extract = $article.extract;
 		url = $article.content_urls.desktop.page;
 		thumbnail = $article.thumbnail;
@@ -89,8 +91,10 @@
 		{/if}
 	</div>
 	<p class="quiz__hidden-word">{hiddenWord ? hiddenWord : ''}</p>
-	<div class="quiz__wiki-description">
-		{#if playerLost || playerWon}
+	{#if !playerLost && !playerWon}
+		<p class="quiz__description">{description ? description : ''}</p>
+	{:else}
+		<div class="quiz__wiki-reveal">
 			{#if thumbnail?.source}
 				<img
 					in:fade
@@ -106,8 +110,8 @@
 			<p class="quiz__wiki-link">
 				<a href={url} target="__blank">See the article on Wikipedia.</a>
 			</p>
-		{/if}
-	</div>
+		</div>
+	{/if}
 </section>
 {#if !playerLost && !playerWon}
 	<Letters bind:this={lettersComponent} />
@@ -140,8 +144,16 @@
 			line-height: 2;
 			letter-spacing: 7px;
 			padding-top: 48px;
+			margin-bottom: 16px;
 		}
-		&__wiki-description {
+
+		&__description {
+			text-align: center;
+			font-size: 18px;
+			min-height: 18px;
+			margin-bottom: 12px;
+		}
+		&__wiki-reveal {
 			width: fit-content;
 			margin: 0 auto;
 			text-align: center;
@@ -187,9 +199,9 @@
 		}
 	}
 	//TODO: Create consistent media queries.
-	@media (min-width:768px) {
-        .quiz {
-            margin-top: 15vh;
-        }
-    }
+	@media (min-width: 768px) {
+		.quiz {
+			margin-top: 15vh;
+		}
+	}
 </style>
