@@ -116,35 +116,39 @@ const calcDifficultyOfUnusedLetters = (title) => {
     return sum
 }
 
-const repitionsReduction = (title, description): number => {
+// A multiplier that reduces the rating if a word in the title is represented in the description.
+const repitionsReductionMultiplier = (title: string, description: string): number => {
     let repetitionSum = 0;
     const descriptionArray = description.replace(/,/g, '').toUpperCase().split(' ');
     descriptionArray.forEach(descWord => {
         if(title.includes(descWord)) {
-            const endOfWordIndex = title.indexOf(descWord) + descWord.length
+            const startOfWordIndex = title.indexOf(descWord);
+            const endOfWordIndex = startOfWordIndex + descWord.length
+            let prevChar: string;
+            startOfWordIndex === 0? prevChar = '' :  prevChar = title.substr(startOfWordIndex - 1, 1);
             const nextChar = title.substr(endOfWordIndex, 1);
-            if(!/^[a-zA-Z]+$/.test(nextChar)) {
+            if(!/^[a-zA-Z]+$/.test(prevChar) && !/^[a-zA-Z]+$/.test(nextChar)) {
                 repetitionSum += descWord.length
             }
         }
     })
     const frequency = repetitionSum / title.replace(/[^A-Za-z']/g, '').length;
-    console.log({frequency});
     return 1 - frequency;
 }
 
 export const calcDifficulty = (title: string, description?: string) => {
-	const difficultyRating = calcDifficultyOfLetters(title) + calcDifficultyOfUnusedLetters(title);
-    const finalRating = Math.round(difficultyRating * repitionsReduction(title, description));
-    
-    let difficulty;
-    if(finalRating < 220) {
+	let difficultyRating = calcDifficultyOfLetters(title) + calcDifficultyOfUnusedLetters(title);
+    difficultyRating = Math.round(difficultyRating * repitionsReductionMultiplier(title, description));
+    difficultyRating < 50 ? difficultyRating = 50 : null;
+
+    let difficulty: string;
+    if(difficultyRating < 200) {
         difficulty = 'Very Easy';
-    } else if(finalRating >= 220 && finalRating < 260) {
+    } else if(difficultyRating >= 200 && difficultyRating < 260) {
         difficulty = 'Easy';
-    } else if (finalRating >= 260 && finalRating < 300) {
+    } else if (difficultyRating >= 260 && difficultyRating < 300) {
         difficulty = 'Medium';
-    } else if (finalRating >= 300 && finalRating < 340) {
+    } else if (difficultyRating >= 300 && difficultyRating < 340) {
         difficulty = 'Hard';
     } else {
         difficulty = 'Very Hard';
