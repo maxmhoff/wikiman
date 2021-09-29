@@ -53,8 +53,8 @@
 	const newArticle = async () => {
 		await fetchArticle();
 		answer = $article.title.toUpperCase();
-		difficulty = calcDifficulty(answer);
 		description = $article.description;
+		difficulty = calcDifficulty(answer, description);
 		extract = $article.extract;
 		url = $article.content_urls.desktop.page;
 		thumbnail = $article.thumbnail;

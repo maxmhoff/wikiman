@@ -1,10 +1,10 @@
 import { alphabet } from './alphabet';
 
-const calcDifficultyOfLetters = (word: string) => {
+const calcDifficultyOfLetters = (title: string) => {
     const WEIGHTING = 100;
 	let sum = 0;
 	let alphaChars = 0;
-	const characters = word.split('');
+	const characters = title.split('');
 	characters.forEach((character) => {
 		switch (character.toUpperCase()) {
 			case 'A':
@@ -61,12 +61,12 @@ const calcDifficultyOfLetters = (word: string) => {
     return sum / alphaChars * WEIGHTING;
 };
 
-const calcDifficultyOfUnusedLetters = (word) => {
+const calcDifficultyOfUnusedLetters = (title) => {
     let sum = 0;
     const letters = alphabet;
 
     letters.forEach((letter) => {
-        if (!word.includes(letter)) {
+        if (!title.includes(letter)) {
             switch (letter) {
                 case 'A':
                 case 'E':
@@ -116,17 +116,35 @@ const calcDifficultyOfUnusedLetters = (word) => {
     return sum
 }
 
-export const calcDifficulty = (word: string) => {
-	const difficultyRating = Math.round(calcDifficultyOfLetters(word) + calcDifficultyOfUnusedLetters(word));
-    console.log(difficultyRating);
+const repitionsReduction = (title, description): number => {
+    let repetitionSum = 0;
+    const descriptionArray = description.replace(/,/g, '').toUpperCase().split(' ');
+    descriptionArray.forEach(descWord => {
+        if(title.includes(descWord)) {
+            const endOfWordIndex = title.indexOf(descWord) + descWord.length
+            const nextChar = title.substr(endOfWordIndex, 1);
+            if(!/^[a-zA-Z]+$/.test(nextChar)) {
+                repetitionSum += descWord.length
+            }
+        }
+    })
+    const frequency = repetitionSum / title.replace(/[^A-Za-z']/g, '').length;
+    console.log({frequency});
+    return 1 - frequency;
+}
+
+export const calcDifficulty = (title: string, description?: string) => {
+	const difficultyRating = calcDifficultyOfLetters(title) + calcDifficultyOfUnusedLetters(title);
+    const finalRating = Math.round(difficultyRating * repitionsReduction(title, description));
+    
     let difficulty;
-    if(difficultyRating < 220) {
+    if(finalRating < 220) {
         difficulty = 'Very Easy';
-    } else if(difficultyRating >= 220 && difficultyRating < 260) {
+    } else if(finalRating >= 220 && finalRating < 260) {
         difficulty = 'Easy';
-    } else if (difficultyRating >= 260 && difficultyRating < 300) {
+    } else if (finalRating >= 260 && finalRating < 300) {
         difficulty = 'Medium';
-    } else if (difficultyRating >= 300 && difficultyRating < 340) {
+    } else if (finalRating >= 300 && finalRating < 340) {
         difficulty = 'Hard';
     } else {
         difficulty = 'Very Hard';
