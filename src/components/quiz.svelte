@@ -64,6 +64,7 @@
 
 	const restartGame = () => {
 		hiddenWord = null;
+		description = null;
 		lives = [...MAX_LIVES];
 		playerWon = false;
 		playerLost = false;
