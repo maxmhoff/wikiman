@@ -4,19 +4,16 @@
 	import Letters from './quiz-components/letters.svelte';
 	import { article, fetchArticle } from '../stores/articlestore';
 	import { guess } from '../stores/guessstore';
-	import { calcDifficulty } from '../utility/ratingcalc';
+	import { getDifficulty } from '../utilities/ratingcalc';
+	import preload from '../utilities/preload';
 
 	let lettersComponent: any;
 
 	let answer: string;
 	let hiddenWord: string;
-	let description: string;
-	let extract: string;
-	let url: string;
-	let thumbnail: any;
 
 	const MAX_LIVES: string[] = ['💗', '💗', '💗', '💗', '💗', '💗', '💗'];
-	let difficulty;
+	let difficulty: string;
 	let lives: string[] = [...MAX_LIVES];
 	let playerLost = false;
 	let playerWon = false;
@@ -50,29 +47,24 @@
 		}
 	});
 
-	const newArticle = async () => {
+	const getArticle = async () => {
 		await fetchArticle();
 		answer = $article.title.toUpperCase();
-		description = $article.description;
-		difficulty = calcDifficulty(answer, description);
-		extract = $article.extract;
-		url = $article.content_urls.desktop.page;
-		thumbnail = $article.thumbnail;
+		difficulty = getDifficulty(answer, $article.description);
 		hiddenWord = answer.replace(/[a-z]/gi, '_');
 		lettersComponent.resetLetters();
 	};
 
 	const restartGame = () => {
 		hiddenWord = null;
-		description = null;
 		lives = [...MAX_LIVES];
 		playerWon = false;
 		playerLost = false;
-		newArticle();
+		getArticle();
 	};
 
 	onMount(() => {
-		newArticle();
+		getArticle();
 	});
 </script>
 
@@ -87,31 +79,30 @@
 				{/if}
 			{/each}
 		</p>
-		{#if difficulty}
-			<p>Difficulty: {difficulty}</p>
-		{/if}
+		<p>{difficulty ? 'Difficulty: ' + difficulty : ''}</p>
 	</div>
 	<p class="quiz__hidden-word">{hiddenWord ? hiddenWord : ''}</p>
 	{#if !playerLost && !playerWon}
-		<p class="quiz__description">{description ? description : ''}</p>
+		<p class="quiz__description">{$article.description ? $article.description : ''}</p>
 	{:else}
-		<div class="quiz__wiki-reveal">
-			{#if thumbnail?.source}
-				<img
-					in:fade
-					class="quiz__thumbnail"
-					width={thumbnail.width}
-					height={thumbnail.height}
-					src={thumbnail.source}
-					alt="Thumbnail from Wikipedia"
-				/>
-			{/if}
-			<p class="quiz__extract">{extract}</p>
-			<button class="quiz__restart-button" on:click={restartGame}> Try again </button>
-			<p class="quiz__wiki-link">
-				<a href={url} target="__blank">See the article on Wikipedia.</a>
-			</p>
-		</div>
+		{#await preload($article.thumbnail?.source)}
+			<p class="quiz__spinner">Loading</p>
+		{:then}
+			<div in:fade class="quiz__wiki-reveal">
+				<figure
+					class="quiz__figure"
+					style="width: {$article.thumbnail.width}px; height:{$article.thumbnail.height}px;"
+				>
+					<img src={$article.thumbnail.source} alt="Thumbnail from Wikipedia" />
+				</figure>
+
+				<p class="quiz__extract">{$article.extract}</p>
+				<button class="quiz__restart-button" on:click={restartGame}> Try again </button>
+				<p class="quiz__wiki-link">
+					<a href={$article.content_urls.desktop.page} target="__blank">See the article on Wikipedia.</a>
+				</p>
+			</div>
+		{/await}
 	{/if}
 </section>
 {#if !playerLost && !playerWon}
@@ -151,14 +142,31 @@
 		&__description {
 			text-align: center;
 			font-size: 18px;
-			min-height: 18px;
+			min-height: 21px;
 			margin-bottom: 12px;
 		}
+
+		&__spinner {
+			text-align: center;
+		}
+
 		&__wiki-reveal {
 			width: fit-content;
 			margin: 0 auto;
 			text-align: center;
 			overflow: hidden;
+		}
+
+		&__figure {
+			margin: 0 auto 24px;
+			border-radius: 16px;
+		}
+
+		&__extract {
+			text-align: left;
+			font-size: 1.0625rem;
+			margin: 0;
+			line-height: 1.7;
 		}
 
 		&__restart-button {
@@ -174,18 +182,6 @@
 			&:hover {
 				cursor: pointer;
 			}
-		}
-
-		&__thumbnail {
-			margin-bottom: 24px;
-			border-radius: 16px;
-		}
-
-		&__extract {
-			text-align: left;
-			font-size: 1.0625rem;
-			margin: 0;
-			line-height: 1.7;
 		}
 
 		&__wiki-link {

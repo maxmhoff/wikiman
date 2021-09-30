@@ -1,4 +1,4 @@
-import { alphabet } from './alphabet';
+import alphabet from './alphabet';
 
 const calcDifficultyOfLetters = (title: string) => {
     const WEIGHTING = 100;
@@ -117,7 +117,7 @@ const calcDifficultyOfUnusedLetters = (title) => {
 }
 
 // A multiplier that reduces the rating if a word in the title is represented in the description.
-const repitionsReductionMultiplier = (title: string, description: string): number => {
+const repetitionsReductionMultiplier = (title: string, description: string): number => {
     let repetitionSum = 0;
     const descriptionArray = description.replace(/,/g, '').toUpperCase().split(' ');
     descriptionArray.forEach(descWord => {
@@ -125,8 +125,9 @@ const repitionsReductionMultiplier = (title: string, description: string): numbe
             const startOfWordIndex = title.indexOf(descWord);
             const endOfWordIndex = startOfWordIndex + descWord.length
             let prevChar: string;
-            startOfWordIndex === 0? prevChar = '' :  prevChar = title.substr(startOfWordIndex - 1, 1);
-            const nextChar = title.substr(endOfWordIndex, 1);
+            let nextChar: string;
+            startOfWordIndex === 0 ? prevChar = '' :  prevChar = title.substr(startOfWordIndex - 1, 1);
+            endOfWordIndex === title.length ? nextChar = '' : nextChar = title.substr(endOfWordIndex, 1);
             if(!/^[a-zA-Z]+$/.test(prevChar) && !/^[a-zA-Z]+$/.test(nextChar)) {
                 repetitionSum += descWord.length
             }
@@ -136,9 +137,9 @@ const repitionsReductionMultiplier = (title: string, description: string): numbe
     return 1 - frequency;
 }
 
-export const calcDifficulty = (title: string, description?: string) => {
+export const getDifficulty = (title: string, description: string) => {
 	let difficultyRating = calcDifficultyOfLetters(title) + calcDifficultyOfUnusedLetters(title);
-    difficultyRating = Math.round(difficultyRating * repitionsReductionMultiplier(title, description));
+    difficultyRating = Math.round(difficultyRating * repetitionsReductionMultiplier(title, description));
     difficultyRating < 50 ? difficultyRating = 50 : null;
 
     let difficulty: string;

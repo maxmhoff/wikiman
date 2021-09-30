@@ -1,4 +1,4 @@
-export const alphabet = [
+const alphabet = [
     'A',
     'B',
     'C',
@@ -26,3 +26,5 @@ export const alphabet = [
     'Y',
     'Z'
 ];
+
+export default alphabet;

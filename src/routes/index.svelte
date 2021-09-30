@@ -3,6 +3,7 @@
 </script>
 
 <main>
+    <slot></slot>
 	<section class="index">
 		<Quiz />
 	</section>

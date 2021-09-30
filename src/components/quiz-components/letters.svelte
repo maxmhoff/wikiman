@@ -1,33 +1,6 @@
 <script lang="ts">
 	import { addNewGuess } from '../../stores/guessstore';
-	const alphabet = [
-		'A',
-		'B',
-		'C',
-		'D',
-		'E',
-		'F',
-		'G',
-		'H',
-		'I',
-		'J',
-		'K',
-		'L',
-		'M',
-		'N',
-		'O',
-		'P',
-		'Q',
-		'R',
-		'S',
-		'T',
-		'U',
-		'V',
-		'W',
-		'X',
-		'Y',
-		'Z'
-	];
+	import alphabet from '../../utilities/alphabet';
 	let letterObjects = alphabet.map((letter) => ({ letter, wasClicked: false }));
 	const handleOnClick = (letterObject: { letter: string; wasClicked: boolean }, i: number) => {
 		addNewGuess(letterObject.letter);
