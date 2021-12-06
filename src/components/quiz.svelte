@@ -97,7 +97,7 @@
 				</figure>
 
 				<p class="quiz__extract">{$article.extract}</p>
-				<button class="quiz__restart-button" on:click={restartGame}> Try again </button>
+				<button class="quiz__restart-button" on:click={restartGame}>Play again</button>
 				<p class="quiz__wiki-link">
 					<a href={$article.content_urls.desktop.page} target="__blank">See the article on Wikipedia.</a>
 				</p>
@@ -141,7 +141,7 @@
 
 		&__description {
 			text-align: center;
-			font-size: 18px;
+			font-size: 1.125rem;
 			min-height: 21px;
 			margin-bottom: 12px;
 		}
@@ -164,7 +164,7 @@
 
 		&__extract {
 			text-align: left;
-			font-size: 1.0625rem;
+			font-size: 1.125rem;
 			margin: 0;
 			line-height: 1.7;
 		}
@@ -185,13 +185,15 @@
 		}
 
 		&__wiki-link {
-			margin-top: 35px;
+			margin-top: 36px;
+			margin-bottom: 36px;
+			color: hotpink;
 			a,
 			a:visited {
-				color: black;
+				color: inherit;
 			}
 			a:hover {
-				color: hotpink;
+				color: inherit;
 			}
 		}
 	}
